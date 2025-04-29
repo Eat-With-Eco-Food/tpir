@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription / Connexion</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <section class="header">
+        <div class="container">
+            <header class="navbar">
+                <div class="logo">
+                    <a href="index.html">
+                    <img src="images/logo.png" alt="Logo EcoFood" width="140">
+                    </a> 
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="listpartner.html">Les Cafés et Pâtisseries</a></li>
+                        <li><a href="inscription.html">Compte</a></li>
+                    </ul>
+                    <a href="cart.html">
+                        <img src="images/cad.png" alt="cart" width="20px">
+                    </a>
+                </nav>
+            </header>
+        </div>
+    </section>
+
+    <div class="form-container">
+        <h2>Créer un compte</h2>
+        <div class="form-group">
+            <label for="new-username">Nom d'utilisateur:</label>
+            <input type="text" id="new-username" name="new-username">
+        </div>
+        <div class="form-group">
+            <label for="new-password">Mot de passe:</label>
+            <input type="password" id="new-password" name="new-password">
+        </div>
+        <button id="register-button">S'inscrire</button>
+
+        <hr>
+
+        <h2>Se connecter</h2>
+        <div class="form-group">
+            <label for="login-username">Nom d'utilisateur:</label>
+            <input type="text" id="login-username" name="login-username">
+        </div>
+        <div class="form-group">
+            <label for="login-password">Mot de passe:</label>
+            <input type="password" id="login-password" name="login-password">
+        </div>
+        <button id="login-button">Se connecter</button>
+
+        <p class="error-message" id="error-message"></p>
+    </div>
+
+    <script>
+        const registerButton = document.getElementById('register-button');
+        const loginButton = document.getElementById('login-button');
+        const errorMessage = document.getElementById('error-message');
+
+        // Identifiants prédéfinis (très basique et non sécurisé)
+        const users = {
+            'utilisateur1': 'motdepasse123',
+            'testuser': 'securepass'
+        };
+
+        registerButton.addEventListener('click', function() {
+            const newUsername = document.getElementById('new-username').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            if (users[newUsername]) {
+                errorMessage.textContent = "Nom d'utilisateur déjà existant.";
+            } else if (newUsername && newPassword) {
+                users[newUsername] = newPassword;
+                localStorage.setItem('users', JSON.stringify(users)); // Simuler la sauvegarde (non persistant si l'utilisateur efface le localStorage)
+                errorMessage.textContent = "Compte créé avec succès. Vous pouvez vous connecter.";
+                document.getElementById('new-username').value = '';
+                document.getElementById('new-password').value = '';
+            } else {
+                errorMessage.textContent = "Veuillez remplir tous les champs pour l'inscription.";
+            }
+        });
+
+        loginButton.addEventListener('click', function() {
+            const loginUsername = document.getElementById('login-username').value;
+            const loginPassword = document.getElementById('login-password').value;
+
+            if (users[loginUsername] && users[loginUsername] === loginPassword) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('loggedInUser', loginUsername);
+                window.location.href = 'index.html'; // Rediriger vers la page d'accueil après la connexion
+            } else {
+                errorMessage.textContent = "Identifiants incorrects.";
+            }
+        });
+
+        // Au chargement de la page, vérifier si un utilisateur est déjà connecté
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = 'index.html'; // Rediriger si déjà connecté
+        }
+    </script>
+</body>
+</html>

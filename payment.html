@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .payment-option {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #eee;
+        }
+        .payment-option label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .order-details {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .order-item span:last-child {
+            font-weight: bold;
+        }
+        .total-amount {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+        .payment-button {
+            display: none;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .payment-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <section class="header">
+        <div class="container">
+            <header class="navbar">
+                <div class="logo">
+                    <a href="index.html">
+                    <img src="images/logo.png" alt="Logo EcoFood" width="140">
+                    </a> 
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="listpartner.html">Les Cafés et Pâtisseries</a></li>
+                        <li><a href="inscription.html">Compte</a></li>
+                    </ul>
+                    <a href="cart.html">
+                        <img src="images/cad.png" alt="cart" width="20px">
+                    </a>
+                </nav>
+            </header>
+        </div>
+    </section>
+
+    <div class="payment-container">
+        <h1>Paiement</h1>
+        <h2>Mes Informations</h2>
+        <div class="order-details" id="order-details">
+            <p>Chargement des détails de la commande...</p>
+        </div>
+
+        <div class="total-amount" id="total-amount">
+        </div>
+
+        <h3>Choisissez votre mode de paiement:</h3>
+
+        <div class="payment-option">
+            <label for="paypal">
+                <input type="radio" id="paypal" name="payment_method" value="paypal" onchange="afficherBouton('paypal')">
+                PayPal
+            </label>
+            <button id="paypal-button" class="payment-button" onclick="alert('Redirection vers PayPal (non fonctionnel pour l\'instant)')">Payer avec PayPal</button>
+        </div>
+
+        <div class="payment-option">
+            <label for="mvola">
+                <input type="radio" id="mvola" name="payment_method" value="mvola" onchange="afficherBouton('mvola')">
+                Mvola
+            </label>
+            <button id="mvola-button" class="payment-button" onclick="alert('Redirection vers Mvola (non fonctionnel pour l\'instant)')">Payer avec Mvola</button>
+        </div>
+
+        <p><a href="cart.html">Retour au panier</a></p>
+    </div>
+
+    <script>
+        const orderDetailsDiv = document.getElementById('order-details');
+        const totalAmountDiv = document.getElementById('total-amount');
+        const paypalButton = document.getElementById('paypal-button');
+        const mvolaButton = document.getElementById('mvola-button');
+        const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+
+        function afficherDetailsCommande() {
+            const panierPourPaiementString = localStorage.getItem('panierPourPaiement');
+            if (panierPourPaiementString) {
+                const panier = JSON.parse(panierPourPaiementString);
+                let detailsHTML = '';
+                let total = 0;
+
+                if (panier && panier.length > 0) {
+                    panier.forEach(article => {
+                        const sousTotal = parseFloat(article.prix) * parseInt(article.quantite);
+                        total += sousTotal;
+                        detailsHTML += `
+                            <div class="order-item">
+                                <span>${article.nom} - Qté: ${article.quantite} (De: ${article.restaurantNom || 'Inconnu'})</span>
+                                <span>${sousTotal.toFixed(2)} Ar</span>
+                            </div>
+                        `;
+                    });
+                    orderDetailsDiv.innerHTML = detailsHTML;
+                    totalAmountDiv.textContent = `TOTAL : ${total.toFixed(2)} Ar`;
+                } else {
+                    orderDetailsDiv.innerHTML = '<p>Votre panier est vide.</p>';
+                    totalAmountDiv.textContent = 'TOTAL : 0.00 Ar';
+                }
+            } else {
+                orderDetailsDiv.innerHTML = '<p>Impossible de récupérer les détails de la commande.</p>';
+                totalAmountDiv.textContent = '';
+            }
+            // localStorage.removeItem('panierPourPaiement');
+        }
+
+        function afficherBouton(selectedMethod) {
+            paypalButton.style.display = 'none';
+            mvolaButton.style.display = 'none';
+
+            if (selectedMethod === 'paypal' && document.getElementById('paypal').checked) {
+                paypalButton.style.display = 'inline-block';
+            } else if (selectedMethod === 'mvola' && document.getElementById('mvola').checked) {
+                mvolaButton.style.display = 'inline-block';
+            }
+        }
+
+        // Afficher les détails de la commande au chargement de la page
+        afficherDetailsCommande();
+
+        // Cacher les boutons de paiement initialement
+        paypalButton.style.display = 'none';
+        mvolaButton.style.display = 'none';
+    </script>
+</body>
+</html>
